@@ -8,7 +8,7 @@ export ZNC_NAME="${ZNC_NAME:-Administrator}"
 export ZNC_DATADIR="${ZNC_DATADIR:-/opt/znc-env}"
 
 # Check if the ZNC config exists
-if [ ! -d $ZNC_DATADIR ]; then
+if [ ! -d $ZNC_DATADIR/configs ]; then
   # Make ZNC configuration
   ./znc_expect.exp
 fi
