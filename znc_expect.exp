@@ -1,0 +1,33 @@
+#!/usr/bin/expect -f
+
+set force_conservative 0
+set timeout 1
+
+spawn /usr/bin/znc -d $env(ZNC_DATADIR) --makeconf
+expect "Listen on port (1025 to 65534):"
+send "$env(ZNC_PORT)\r"
+expect "Listen using SSL (yes/no) \[no\]:"
+send "yes\r"
+expect "Listen using both IPv4 and IPv6 (yes/no) \[yes\]:"
+send "no\r"
+expect "Username (alphanumeric):"
+send "$env(ZNC_USER)\r"
+expect "Enter password:"
+send "$env(ZNC_PASS)\r"
+expect "Confirm password:"
+send "$env(ZNC_PASS)\r"
+expect "Nick \[$env(ZNC_USER)\]:"
+send "\r"
+expect "Alternate nick \[$env(ZNC_USER)_\]:"
+send "\r"
+expect "Ident \[$env(ZNC_USER)\]:"
+send "\r"
+expect "Real name \[Got ZNC?\]:"
+send "$env(ZNC_NAME)\r"
+expect "Bind host (optional):"
+send "\r"
+expect "Set up a network? (yes/no) \[yes\]:"
+send "no\r"
+expect "Launch ZNC now? (yes/no) \[yes\]:"
+send "no\r"
+expect eof
