@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Handle environment variables
-export ZNC_PORT="${ZNC_PORT:-9876}"
 export ZNC_USER="${ZNC_USER:-admin}"
 export ZNC_PASS="${ZNC_PASS:-admin}"
 export ZNC_NAME="${ZNC_NAME:-Administrator}"

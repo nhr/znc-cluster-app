@@ -5,7 +5,7 @@ set timeout 1
 
 spawn /usr/bin/znc -d $env(ZNC_DATADIR) --makeconf
 expect "Listen on port (1025 to 65534):"
-send "$env(ZNC_PORT)\r"
+send "9876\r"
 expect "Listen using SSL (yes/no) \[no\]:"
 send "yes\r"
 expect "Listen using both IPv4 and IPv6 (yes/no) \[yes\]:"
