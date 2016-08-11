@@ -6,5 +6,5 @@ COPY znc_* /opt/znc-run/
 RUN chown -R 1001:0 /opt/znc-env /opt/znc-run && chmod -R ug+rwx /opt/znc-env /opt/znc-run
 USER 1001
 
-EXPOSE 9876
+EXPOSE 6697
 ENTRYPOINT ["/opt/znc-run/znc_runner.sh"]
