@@ -1,0 +1,145 @@
+apiVersion: v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: 'ZNC: IRC Bouncer'
+objects:
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: This template launches a ZNC IRC bouncer with a configurable user account / password
+      iconClass: fa-comments
+      tags: instant-app,znc
+    creationTimestamp: null
+    labels:
+      app: znc
+    name: znc
+  spec:
+    replicas: 1
+    selector:
+      app: znc
+      deploymentconfig: znc
+    strategy:
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+          openshift.io/container.znc.image.entrypoint: '["/opt/znc-run/znc_runner.sh"]'
+        creationTimestamp: null
+        labels:
+          app: znc
+          deploymentconfig: znc
+      spec:
+        containers:
+        - image: docker.io/nhripps/znc-cluster-app
+          env:
+          - name: ZNC_USER
+            value: ${ZNC_USER}
+          - name: ZNC_NAME
+            value: ${ZNC_NAME}
+          - name: ZNC_PASS
+            value: ${ZNC_PASS}
+          imagePullPolicy: Always
+          livenessProbe:
+            exec:
+              command:
+              - pgrep
+              - znc
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: znc
+          ports:
+          - containerPort: 6697
+            protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+              - pgrep
+              - znc
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - znc
+        from:
+          kind: ImageStreamTag
+          name: znc:latest
+      type: ImageChange
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: znc
+    name: znc
+  spec:
+    ports:
+    - name: 6697-tcp
+      port: 6697
+      protocol: TCP
+      targetPort: 6697
+    selector:
+      app: znc
+      deploymentconfig: znc
+    sessionAffinity: None
+    type: ClusterIP
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    creationTimestamp: null
+    labels:
+      app: znc
+    name: znc
+  spec:
+    host: ${APPLICATION_DOMAIN}
+    port:
+      targetPort: 6697-tcp
+    tls:
+      termination: passthrough
+    to:
+      kind: Service
+      name: znc
+parameters:
+- name: ZNC_USER
+  displayName: ZNC Username
+  description: Username for first ZNC user.
+  required: true
+  value: 'admin'
+- name: ZNC_NAME
+  displayName: ZNC Display Name
+  description: Display name for the first ZNC user.
+  required: true
+  value: 'Administrator'
+- name: ZNC_PASS
+  displayName: ZNC Password
+  description: Password for the first ZNC user.
+  generate: expression
+  from: "[a-zA-Z0-9]{16}"
+- name: APPLICATION_DOMAIN
+  displayName: Application Hostname
+  description: The exposed hostname that will route to the Node.js service, if left blank a value will be defaulted.
+  value: ""

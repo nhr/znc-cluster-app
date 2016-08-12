@@ -11,6 +11,12 @@ export ZNC_DATADIR=/opt/znc-env
 if [ ! -d ${ZNC_DATADIR}/configs ]; then
   # Make ZNC configuration
   ${ZNC_EXECDIR}/znc_expect.exp
+
+  # Disable IP-based web session protection.
+  # This is necessary because a cluster-friendly ZNC is probably
+  # running behind some load balancers and therefore a client's
+  # IP address will likely change.
+  sed -i "s/LoadModule\ =\ webadmin/LoadModule\ =\ webadmin\nProtectWebSessions\ =\ false/" ${ZNC_DATADIR}/configs/znc.conf
 fi
 
 # Run ZNC
