@@ -1,0 +1,153 @@
+apiVersion: v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: znc-cluster-app
+objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+      openshift.io/image.dockerRepositoryCheck: 2016-08-18T18:54:34Z
+    creationTimestamp: null
+    generation: 2
+    labels:
+      app: znc-cluster-app
+    name: znc-cluster-app
+  spec: {}
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    generation: 4
+    labels:
+      app: znc-cluster-app
+    name: znc-cluster-app
+  spec:
+    replicas: 1
+    selector:
+      app: znc-cluster-app
+      deploymentconfig: znc-cluster-app
+    strategy:
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+          openshift.io/container.znc-cluster-app.image.entrypoint: '["/opt/znc-run/znc_runner.sh"]'
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          app: znc-cluster-app
+          deploymentconfig: znc-cluster-app
+      spec:
+        containers:
+        - env:
+          - name: ZNC_USER
+            value: "${ZNC_USER}"
+          - name: ZNC_PASS
+            value: "${ZNC_PASS}"
+          - name: ZNC_NAME
+            value: "${ZNC_NAME}"
+          image: nhripps/znc-cluster-app@sha256:cf496fa3969f044a3cbc1d43042adacb4f6653500922f65b8dd06178a9523acd
+          imagePullPolicy: Always
+          name: znc-cluster-app
+          ports:
+          - containerPort: 6697
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - znc-cluster-app
+        from:
+          kind: ImageStreamTag
+          name: znc-cluster-app:latest
+          namespace: myproject
+      type: ImageChange
+  status:
+    availableReplicas: 1
+    observedGeneration: 4
+    replicas: 1
+    updatedReplicas: 1
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: znc-cluster-app
+    name: znc-cluster-app
+  spec:
+    ports:
+    - name: 6697-tcp
+      port: 6697
+      protocol: TCP
+      targetPort: 6697
+    selector:
+      app: znc-cluster-app
+      deploymentconfig: znc-cluster-app
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    creationTimestamp: null
+    labels:
+      app: znc-cluster-app
+    name: znc-cluster-app
+  spec:
+    host: znc-cluster-app-myproject.10.193.21.144.xip.io
+    port:
+      targetPort: 6697-tcp
+    tls:
+      termination: passthrough
+    to:
+      kind: Service
+      name: znc-cluster-app
+      weight: 100
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: 2016-08-18T18:54:19Z
+        status: "True"
+        type: Admitted
+      host: znc-cluster-app-myproject.10.193.21.144.xip.io
+      routerName: router
+parameters:
+  - name: ZNC_NAME
+    description: The display name for the first ZNC user account
+    value: Administrator
+    required: true
+  - name: ZNC_USER
+    description: The username for the first ZNC user account
+    value: admin
+    required: true
+  - name: ZNC_PASS
+    description: The password for the first ZNC user account
+    generate: expression
+    from: "[a-zA-Z0-9]{16}"
