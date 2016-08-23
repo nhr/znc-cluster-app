@@ -7,15 +7,15 @@ objects:
 - apiVersion: v1
   kind: ImageStream
   metadata:
-    annotations:
-      openshift.io/generated-by: OpenShiftNewApp
-      openshift.io/image.dockerRepositoryCheck: 2016-08-18T18:54:34Z
-    creationTimestamp: null
-    generation: 2
     labels:
       app: znc-cluster-app
     name: znc-cluster-app
-  spec: {}
+  spec:
+    tags:
+    - from:
+        kind: DockerImage
+        name: nhripps/znc-cluster-app
+      name: latest
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:

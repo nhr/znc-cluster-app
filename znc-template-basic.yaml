@@ -17,13 +17,9 @@ objects:
     name: znc-cluster-app
   spec:
     tags:
-    - annotations:
-        openshift.io/imported-from: nhripps/znc-cluster-app:latest
-      from:
+    - from:
         kind: DockerImage
-        name: 172.30.195.154:5000/myproject/znc-cluster-app:latest
-      generation: 2
-      importPolicy: {}
+        name: nhripps/znc-cluster-app
       name: latest
 - apiVersion: v1
   kind: DeploymentConfig
