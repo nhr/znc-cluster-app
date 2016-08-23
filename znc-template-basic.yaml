@@ -25,8 +25,6 @@ objects:
       generation: 2
       importPolicy: {}
       name: latest
-  status:
-    dockerImageRepository: ""
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
@@ -86,11 +84,6 @@ objects:
           name: znc-cluster-app:latest
           namespace: myproject
       type: ImageChange
-  status:
-    availableReplicas: 1
-    observedGeneration: 2
-    replicas: 1
-    updatedReplicas: 1
 - apiVersion: v1
   kind: Service
   metadata:
@@ -111,8 +104,6 @@ objects:
       deploymentconfig: znc-cluster-app
     sessionAffinity: None
     type: ClusterIP
-  status:
-    loadBalancer: {}
 - apiVersion: v1
   kind: Route
   metadata:
@@ -123,7 +114,6 @@ objects:
       app: znc-cluster-app
     name: znc-cluster-app
   spec:
-    host: znc-cluster-app-myproject.10.193.21.144.xip.io
     port:
       targetPort: 6697-tcp
     tls:
@@ -132,11 +122,3 @@ objects:
       kind: Service
       name: znc-cluster-app
       weight: 100
-  status:
-    ingress:
-    - conditions:
-      - lastTransitionTime: 2016-08-18T18:51:19Z
-        status: "True"
-        type: Admitted
-      host: znc-cluster-app-myproject.10.193.21.144.xip.io
-      routerName: router
