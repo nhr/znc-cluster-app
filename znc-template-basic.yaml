@@ -56,7 +56,7 @@ objects:
           deploymentconfig: znc-cluster-app
       spec:
         containers:
-        - image: nhripps/znc-cluster-app@sha256:cf496fa3969f044a3cbc1d43042adacb4f6653500922f65b8dd06178a9523acd
+        - image: nhripps/znc-cluster-app
           imagePullPolicy: Always
           name: znc-cluster-app
           ports:
