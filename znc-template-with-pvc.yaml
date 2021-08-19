@@ -14,7 +14,7 @@ objects:
     tags:
     - from:
         kind: DockerImage
-        name: nhripps/znc-cluster-app
+        name: quay.io/nhripps/znc-cluster-app
       name: latest
 - apiVersion: v1
   kind: DeploymentConfig

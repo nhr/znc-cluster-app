@@ -1,4 +1,4 @@
-FROM fedora
+FROM quay.io/fedora/fedora:34
 LABEL maintainer="N. Harrison Ripps <nhr@redhat.com>"
 
 RUN dnf install -y procps-ng expect znc --allowerasing && mkdir /opt/znc-env && mkdir /opt/znc-run
